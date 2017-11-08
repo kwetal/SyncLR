@@ -28,15 +28,24 @@ public class SynchronizerTest
         Synchronizer syncer = new Synchronizer(left, right);
         syncer.collectTheSets();
         syncer.synchronizeLeftToRight();
+        System.out.println("Resultaat:\n"+right);
     }
 
     private SyncableObjectProvider setupTestSetLeft() {
-        SyncableObjectProvider data = new GebruikerProvider();
+        GebruikerProvider data = new GebruikerProvider();
+        data.add("Arjen", "Bax", "Drachten");
+        data.add("Peter", "Bax", "Akkrum");
+        data.add("Chris", "Bax", "Bedum");
+        data.add("Theo", "Bax", "Norg");
         return data;
     }
 
     private SyncableObjectProvider setupTestSetRight() {
-        SyncableObjectProvider data = new GebruikerProvider();
+        GebruikerProvider data = new GebruikerProvider();
+        data.add("Arjen", "Bax", "Drachten");
+        data.add("Peter", "Bax", "Drachten");
+        data.add("Theo", "Bax", "Drachten");
+        data.add("Marcella", "Gortmaker", "Bedum");
         return data;
     }
 
