@@ -116,7 +116,12 @@ class GebruikerProvider implements SyncableObjectProvider {
 
     @Override
     public Iterable<SyncableObject> getCollection() {
-        return () -> new MyIterator();
+        return new Iterable<SyncableObject>() {
+            @Override
+            public Iterator<SyncableObject> iterator() {
+                return new MyIterator();
+            }
+        };
     }
 
     private class MyIterator implements Iterator<SyncableObject>
