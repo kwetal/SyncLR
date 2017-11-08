@@ -24,15 +24,16 @@ public class Synchronizer
         for (SyncableObject item: leftCollection.getCollection()) {
             differences.add(LREntry.createLeftEntry(item));
         }
-        for (SyncableObject rightItem: rightCollection.getCollection()) {
+        for (SyncableObject rightItem : rightCollection.getCollection()) {
             final String key = rightItem.getKey();
             LREntry entry = differences.find(key);
             if (entry == null) {
                 differences.add(LREntry.createRightEntry(rightItem));
-            } else if (entry.equalItems()) {
-                differences.remove(key);
             } else {
                 entry.setRightItem(rightItem);
+                if (entry.equalItems()) {
+                    differences.remove(key);
+                }
             }
         }
     }
