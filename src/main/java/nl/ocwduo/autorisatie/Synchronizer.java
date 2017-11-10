@@ -29,18 +29,16 @@ public class Synchronizer
             LREntry entry = differences.find(key);
             if (entry == null) {
                 differences.add(LREntry.createRightEntry(rightItem));
-            } else {
-                entry.setRightItem(rightItem);
-                if (entry.equalItems()) {
+            } else if (entry.getLeftItem().isEqualTo(rightItem)) {
                     differences.remove(key);
-                }
+            } else {
+                entry.addRightItem(rightItem);
             }
         }
     }
     
     public void synchronizeLeftToRight() {
         for (LREntry entry: differences) {
-            if (!entry.getSelected()) continue;
             if (entry.getLeftItem() == null) {
                 rightCollection.delete(entry.getRightItem());
             } else if (entry.getRightItem() == null) {
@@ -66,10 +64,10 @@ class Differences implements Iterable<LREntry> {
 
     @Override
     public Iterator<LREntry> iterator() {
-        return new MyIterator();
+        return new AllEntries();
     }
 
-    private class MyIterator implements Iterator<LREntry> {
+    private class AllEntries implements Iterator<LREntry> {
 
         Map.Entry<String, LREntry> current = differenceSet.firstEntry();
 
@@ -90,51 +88,40 @@ class Differences implements Iterable<LREntry> {
 
 class LREntry {
     static LREntry createLeftEntry(SyncableObject item) {
-        LREntry entry = new LREntry(item.getKey());
-        entry.setLeftItem(item);
+        LREntry entry = new LREntry(item.getKey(), item);
         return entry;
     }
 
     static LREntry createRightEntry(SyncableObject item) {
-        LREntry entry = new LREntry(item.getKey());
-        entry.setRightItem(item);
+        LREntry entry = new LREntry(item.getKey(), null);
+        entry.rightItem = item;
         return entry;
     }
 
-    private LREntry(String key) {
-        this.key = key;
-    }
-
-    private final String key;
-    private SyncableObject leftItem;
-    private SyncableObject rightItem;
-    private boolean selected;
-
-    String getKey() { return key; }
-
-    boolean getSelected() { return selected; }
-
-    void setSelected(boolean value) { selected = value; }
-
-    void setLeftItem(SyncableObject item) {
-        if (leftItem != null) {
-            throw new IllegalStateException("left item can be set only once");
-        }
-        leftItem = item;
-    }
-
-    SyncableObject getLeftItem() { return leftItem; }
-
-    void setRightItem(SyncableObject item) {
+    void addRightItem(SyncableObject item) {
         if (rightItem != null) {
             throw new IllegalStateException("right item can be set only once");
         }
         rightItem = item;
     }
 
-    SyncableObject getRightItem() { return rightItem; }
-
     boolean equalItems() {
         return leftItem.isEqualTo(rightItem);
     }
+
+    private LREntry(String key, SyncableObject item) {
+        this.key = key;
+        leftItem = item;
+    }
+
+    private final String key;
+    private final SyncableObject leftItem;
+    private SyncableObject rightItem;
+
+    String getKey() { return key; }
+
+    SyncableObject getLeftItem() { return leftItem; }
+
+    SyncableObject getRightItem() { return rightItem; }
+
 }
