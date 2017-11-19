@@ -10,7 +10,7 @@ public interface SyncableObjectProvider
      *
      * @return
      */
-    Iterable<SyncableObject> getCollection();
+    Iterable<? extends SyncableObject> getCollection();
 
     /** This method will be called to create a new item in this collection.
      *
