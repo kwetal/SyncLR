@@ -5,10 +5,9 @@
  */
 package nl.ocwduo.autorisatie;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import org.apache.commons.collections.*;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -27,6 +26,9 @@ public class SynchronizerTest
         SyncableObjectProvider right = setupTestSetRight();
         Synchronizer syncer = new Synchronizer(left, right);
         syncer.collectTheSets();
+        checkMissingLeft(syncer);
+        checkMissingRight(syncer);
+        checkDiffering(syncer);
         syncer.synchronizeLeftToRight();
         System.out.println("Resultaat:\n"+right);
     }
@@ -42,12 +44,45 @@ public class SynchronizerTest
 
     private SyncableObjectProvider setupTestSetRight() {
         GebruikerProvider data = new GebruikerProvider();
-        data.add("Arjen", "Bax", "Drachten");
-        data.add("Peter", "Bax", "Drachten");
-        data.add("Theo", "Bax", "Drachten");
+        data.add("Theo", "Bax", "Utrecht");
         data.add("Marcella", "Gortmaker", "Bedum");
+        data.add("Peter", "Bax", "Drachten");
+        data.add("Arjen", "Bax", "Drachten");
         return data;
     }
+
+    private void checkMissingLeft(Synchronizer syncer) {
+        List<LREntry> missing = new ArrayList<>();
+        CollectionUtils.addAll(missing, syncer.leftMissingItems());
+        assertEquals(1, missing.size());
+        assertThatListContainsKey(missing, "Gortmaker:Marcella");
+    }
+
+    private void checkMissingRight(Synchronizer syncer) {
+        List<LREntry> missing = new ArrayList<>();
+        CollectionUtils.addAll(missing, syncer.rightMissingItems());
+        assertEquals(1, missing.size());
+        assertThatListContainsKey(missing, "Bax:Chris");
+    }
+
+    private void checkDiffering(Synchronizer syncer) {
+        List<LREntry> differing = new ArrayList<>();
+        CollectionUtils.addAll(differing, syncer.differingItems());
+        assertEquals(2, differing.size());
+        assertThatListContainsKey(differing, "Bax:Peter");
+        assertThatListContainsKey(differing, "Bax:Theo");
+    }
+
+    private void assertThatListContainsKey(List<LREntry> missing, final String testKey) {
+        CollectionUtils.find(missing, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                System.out.println("compare "+((LREntry)o).getKey()+" with "+testKey);
+                return ((LREntry)o).getKey().equals(testKey);
+            }
+        });
+    }
+
 
 }
 
@@ -59,6 +94,11 @@ class Gebruiker {
     Gebruiker(String vn, String an) {
         voornaam = vn;
         achternaam = an;
+    }
+
+    @Override
+    public String toString() {
+        return "["+voornaam+" "+achternaam+":"+woonplaats+"]";
     }
 }
 
@@ -95,6 +135,7 @@ class SyncableGebruiker extends Gebruiker implements SyncableObject {
     }
 }
 
+
 class GebruikerProvider implements SyncableObjectProvider {
     private final List<SyncableGebruiker> data = new ArrayList<>();
     public void add(String vn, String an, String wp) {
@@ -124,28 +165,24 @@ class GebruikerProvider implements SyncableObjectProvider {
     }
 
     @Override
-    public Iterable<SyncableObject> getCollection() {
-        return new Iterable<SyncableObject>() {
+    public String toString() {
+        String joiner = "[";
+        StringBuilder sb = new StringBuilder();
+        for (SyncableGebruiker item: data) {
+            sb.append(joiner).append(item);
+            joiner = "; ";
+        }
+        return sb.append("]").toString();
+    }
+
+    @Override
+    public Iterable<? extends SyncableObject> getCollection() {
+        return new Iterable<SyncableGebruiker>() {
             @Override
-            public Iterator<SyncableObject> iterator() {
-                return new MyIterator();
+            public Iterator<SyncableGebruiker> iterator() {
+                return data.iterator();
             }
+
         };
     }
-
-    private class MyIterator implements Iterator<SyncableObject>
-    {
-        Iterator<SyncableGebruiker> dataIterator = data.iterator();
-        @Override
-        public boolean hasNext() {
-            return dataIterator.hasNext();
-        }
-
-        @Override
-        public SyncableObject next() {
-            return dataIterator.next();
-        }
-    }
-
-
 }
