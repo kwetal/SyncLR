@@ -1,6 +1,8 @@
 package nl.ocwduo.autorisatie;
 
 import java.util.*;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.iterators.FilterIterator;
 
 /**
  *
@@ -33,7 +35,7 @@ public class Synchronizer
             }
         }
     }
-    
+
     public void synchronizeLeftToRight() {
         for (LREntry entry: differences) {
             if (entry.getLeftItem() == null) {
@@ -44,6 +46,38 @@ public class Synchronizer
                 rightCollection.updateFrom(entry.getLeftItem(), entry.getRightItem());
             }
         }
+    }
+
+    public Iterator<LREntry> leftMissingItems() {
+        Predicate missingLeft = new Predicate()
+        {
+            @Override
+            public boolean evaluate(Object o) {
+                return ((LREntry)o).getLeftItem() == null;
+            }
+        };
+        return new FilterIterator(differences.iterator(), missingLeft);
+    }
+    public Iterator<LREntry> rightMissingItems() {
+        Predicate missingRight = new Predicate()
+        {
+            @Override
+            public boolean evaluate(Object t) {
+                return ((LREntry)t).getRightItem() == null;
+            }
+        };
+        return new FilterIterator(differences.iterator(), missingRight);
+    }
+    public Iterator<LREntry> differingItems() {
+        Predicate different = new Predicate()
+        {
+            @Override
+            public boolean evaluate(Object o) {
+                LREntry t = (LREntry)o;
+                return t.getLeftItem() != null && t.getRightItem() != null;
+            }
+        };
+        return new FilterIterator(differences.iterator(), different);
     }
 }
 
