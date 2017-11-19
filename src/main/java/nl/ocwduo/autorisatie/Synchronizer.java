@@ -49,35 +49,32 @@ public class Synchronizer
     }
 
     public Iterator<LREntry> leftMissingItems() {
-        Predicate missingLeft = new Predicate()
+        return new FilterIterator(differences.iterator(), new Predicate()
         {
             @Override
             public boolean evaluate(Object o) {
                 return ((LREntry)o).getLeftItem() == null;
             }
-        };
-        return new FilterIterator(differences.iterator(), missingLeft);
+        });
     }
     public Iterator<LREntry> rightMissingItems() {
-        Predicate missingRight = new Predicate()
+        return new FilterIterator(differences.iterator(), new Predicate()
         {
             @Override
             public boolean evaluate(Object t) {
                 return ((LREntry)t).getRightItem() == null;
             }
-        };
-        return new FilterIterator(differences.iterator(), missingRight);
+        });
     }
     public Iterator<LREntry> differingItems() {
-        Predicate different = new Predicate()
+        return new FilterIterator(differences.iterator(), new Predicate()
         {
             @Override
             public boolean evaluate(Object o) {
                 LREntry t = (LREntry)o;
                 return t.getLeftItem() != null && t.getRightItem() != null;
             }
-        };
-        return new FilterIterator(differences.iterator(), different);
+        });
     }
 }
 
