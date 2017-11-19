@@ -151,13 +151,13 @@ class GebruikerProvider implements SyncableObjectProvider {
     }
 
     @Override
-    public void delete(SyncableObject item) {
+    public void deleteItem(SyncableObject item) {
         SyncableGebruiker u = (SyncableGebruiker)item;
         data.remove(u);
     }
 
     @Override
-    public void updateFrom(SyncableObject leftItem, SyncableObject rightItem) {
+    public void updateItemFrom(SyncableObject leftItem, SyncableObject rightItem) {
         SyncableGebruiker leftUser = (SyncableGebruiker)leftItem;
         SyncableGebruiker rightUser = (SyncableGebruiker)rightItem;
         int index = data.indexOf(rightUser);

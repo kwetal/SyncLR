@@ -18,8 +18,17 @@ public interface SyncableObjectProvider
      */
     public void createItemFrom(SyncableObject item);
 
-    public void delete(SyncableObject rightItem);
+    /** This method will be called to deleteItem an item from the collection.
+     *
+     * @param item the item to be removed.
+     */
+    public void deleteItem(SyncableObject item);
 
-    public void updateFrom(SyncableObject leftItem, SyncableObject rightItem);
+    /**
+     * This method will be called to update the differing attributes.
+     * @param leftItem The item to take the attributes from.
+     * @param rightItem The item to transfer the attributes to.
+     */
+    public void updateItemFrom(SyncableObject leftItem, SyncableObject rightItem);
 
 }
