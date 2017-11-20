@@ -32,6 +32,7 @@ public class LREntry {
     private final String key;
     private final SyncableObject leftItem;
     private SyncableObject rightItem;
+    private boolean selected = true;
 
     String getKey() { return key; }
 
@@ -39,4 +40,11 @@ public class LREntry {
 
     SyncableObject getRightItem() { return rightItem; }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean value) {
+        selected = value;
+    }
 }
