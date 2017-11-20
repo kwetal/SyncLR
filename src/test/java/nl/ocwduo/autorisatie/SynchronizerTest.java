@@ -9,7 +9,7 @@ import java.util.*;
 import org.apache.commons.collections.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
-
+import nl.ocwduo.autorisatie.domain.*;
 /**
  *
  * @author arjen
@@ -88,21 +88,6 @@ public class SynchronizerTest
 }
 
 
-class Gebruiker {
-    final String voornaam;
-    final String achternaam;
-    String woonplaats;
-    Gebruiker(String vn, String an) {
-        voornaam = vn;
-        achternaam = an;
-    }
-
-    @Override
-    public String toString() {
-        return "["+voornaam+" "+achternaam+":"+woonplaats+"]";
-    }
-}
-
 class SyncableGebruiker extends Gebruiker implements SyncableObject {
 
     public SyncableGebruiker(String vn, String an) {
@@ -111,15 +96,15 @@ class SyncableGebruiker extends Gebruiker implements SyncableObject {
 
     @Override
     public String getKey() {
-        return achternaam+":"+voornaam;
+        return getAchternaam()+":"+getVoornaam();
     }
 
     @Override
     public boolean isEqualTo(SyncableObject obj) {
         Gebruiker that = (Gebruiker)obj;
-        return Objects.equals(voornaam, that.voornaam)
-            && Objects.equals(achternaam, that.achternaam)
-            && Objects.equals(woonplaats, that.woonplaats);
+        return Objects.equals(getVoornaam(), that.getVoornaam())
+            && Objects.equals(getAchternaam(), that.getAchternaam())
+            && Objects.equals(getWoonplaats(), that.getWoonplaats());
     }
 
     @Override
@@ -141,7 +126,7 @@ class GebruikerProvider implements SyncableObjectProvider {
     private final List<SyncableGebruiker> data = new ArrayList<>();
     public void add(String vn, String an, String wp) {
         SyncableGebruiker u = new SyncableGebruiker(vn, an);
-        u.woonplaats = wp;
+        u.setWoonplaats(wp);
         data.add(u);
     }
 
