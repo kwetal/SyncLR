@@ -60,15 +60,23 @@ public class Synchronizer
      * <li> key present in both L and R, but items differ on some attributes: update the items in the R collection using the corresponding items from the L collection as the template.
      * </ol>
      */
-    public void synchronizeLeftToRight() {
-        for (LREntry entry: differences) {
-            if (entry.getLeftItem() == null) {
-                rightCollection.deleteItem(entry.getRightItem());
-            } else if (entry.getRightItem() == null) {
-                rightCollection.createItemFrom(entry.getLeftItem());
-            } else {
-                rightCollection.updateItemFrom(entry.getLeftItem(), entry.getRightItem());
+    public void synchronizeSelectedLeftToRight() {
+        for (LREntry entry : differences) {
+            if (entry.isSelected()) {
+                synchronizeEntryLeftToRight(entry);
             }
+        }
+    }
+
+    private void synchronizeEntryLeftToRight(LREntry entry) {
+        SyncableObject leftItem = entry.getLeftItem();
+        SyncableObject rightItem = entry.getRightItem();
+        if (leftItem == null) {
+            rightCollection.deleteItem(rightItem);
+        } else if (rightItem == null) {
+            rightCollection.createItemFrom(leftItem);
+        } else {
+            rightCollection.updateItemFrom(leftItem, rightItem);
         }
     }
 

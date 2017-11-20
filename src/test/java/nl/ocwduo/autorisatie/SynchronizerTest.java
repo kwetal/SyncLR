@@ -29,7 +29,8 @@ public class SynchronizerTest
         checkMissingLeft(syncer);
         checkMissingRight(syncer);
         checkDiffering(syncer);
-        syncer.synchronizeLeftToRight();
+        System.out.println("Voor synchronisatie:\n"+right);
+        syncer.synchronizeSelectedLeftToRight();
         System.out.println("Resultaat:\n"+right);
     }
 
