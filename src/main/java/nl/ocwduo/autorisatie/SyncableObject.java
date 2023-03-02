@@ -11,7 +11,7 @@ public interface SyncableObject
      * @return The unique key for the object in the Left or Right set. Assumed to be non-null.
      */
     String getKey();
-    /** Determine whether tow objects are equal.
+    /** Determine whether two objects are equal.
      * Objects will get compared by the algorithm when they have equal keys.
      * @param that The other object.
      * @return true if all the "essential" fields are equal and the objects don't need to be synchronised.
